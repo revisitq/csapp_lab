@@ -262,11 +262,10 @@ int isLessOrEqual(int x, int y) {
 int logicalNeg(int x) {
   int revert_x = ~x;
   int not_negate = revert_x >> 31; //0代表是负数，1包含两种情况（整数或0）
-  /* x>0 */
   int x_minus_1 = x + (~1) + 1; 
   int x_bt_1= x_minus_1 >> 31;//为0时代表x>1，为1代表x<=1
-  int not_negateANDpositive = not_negate & ((x_bt_1) & (x^1));
-  return not_negateANDpositive;
+  int is_zero = not_negate & ((x_bt_1) & (x^1));
+  return is_zero;
 }
 /* howManyBits - return the minimum number of bits required to represent x in
  *             two's complement
@@ -281,11 +280,11 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
-  int bitsCounter = 0;
-  int p = x >> 31;
-  p = (x >> 30) ^ p;
-
-  return 0;
+  int mask = 1 << 31;
+  int bit31 = x & mask; 
+  x = x << 1;
+  int not_equal = (bit31 ^ x);
+  return 2;
 }
 //float
 /* 
