@@ -143,7 +143,12 @@ NOTES:
  *   Rating: 1
  */
 int bitXor(int x, int y) {
-  return 2;
+  int not_x = ~x;
+  int not_y = ~y;
+  int part1 = x&not_y;
+  int part2 = not_x&y;
+  int not_ret = (~part1)&(~part2);
+  return ~not_ret;
 }
 /* 
  * tmin - return minimum two's complement integer 
@@ -152,9 +157,7 @@ int bitXor(int x, int y) {
  *   Rating: 1
  */
 int tmin(void) {
-
-  return 2;
-
+  return 1<<31;
 }
 //2
 /*
@@ -165,7 +168,9 @@ int tmin(void) {
  *   Rating: 1
  */
 int isTmax(int x) {
-  return 2;
+  int cond1 = !((x+1) ^ (~x)); 
+  int cond2 = !(x ^ (~0)) ;
+  return cond1&(!cond2);
 }
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -176,7 +181,9 @@ int isTmax(int x) {
  *   Rating: 2
  */
 int allOddBits(int x) {
-  return 2;
+  int allOddBits=(0xAA<<24)|(0xAA<<16)|(0xAA<<8)|0xAA; //constrcut mask
+  int ret = (allOddBits&x)^allOddBits; //detect
+  return !ret;
 }
 /* 
  * negate - return -x 
@@ -186,7 +193,7 @@ int allOddBits(int x) {
  *   Rating: 2
  */
 int negate(int x) {
-  return 2;
+  return (~x)+1;
 }
 //3
 /* 
@@ -198,8 +205,13 @@ int negate(int x) {
  *   Max ops: 15
  *   Rating: 3
  */
-int isAsciiDigit(int x) {
-  return 2;
+int isAsciiDigit(int x){
+  int condA = !((x >> 4) ^ 0x3);//事件A，在0x30~0x3F
+  int condB = !(x & 0x08);      //事件B，小于0x38
+  int condC = !((x & 0x0E) ^ 0x08);//事件C，是1000
+  int notB = !condB;
+  int ret = condA &(condB | (notB & condC));
+  return ret;
 }
 /* 
  * conditional - same as x ? y : z 
@@ -209,7 +221,11 @@ int isAsciiDigit(int x) {
  *   Rating: 3
  */
 int conditional(int x, int y, int z) {
-  return 2;
+  int BOOL = !x;
+  int mask = BOOL + (~0);
+  int ret1 = mask & y;
+  int ret2 = ~mask & z;
+  return ret1 + ret2;
 }
 /* 
  * isLessOrEqual - if x <= y  then return 1, else return 0 
@@ -219,7 +235,12 @@ int conditional(int x, int y, int z) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  return 2;
+  int negate_y = ~y + 1;
+  int equal = !(x^y);//判断x与y是否相等
+  int sum = negate_y + x; //sum = x-y;
+  int big_than_0 = !(sum & 1<<31);
+  int ret =equal | (!big_than_0);
+  return ret;
 }
 //4
 /* 
