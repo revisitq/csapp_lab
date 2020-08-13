@@ -182,7 +182,7 @@ int isTmax(int x) {
  */
 int allOddBits(int x) {
   int allOddBits=(0xAA<<24)|(0xAA<<16)|(0xAA<<8)|0xAA; //constrcut mask
-  int ret = (allOddBits&x)^allOddBits; //detect
+  int ret = (allOddBits & x) ^ allOddBits; //detect
   return !ret;
 }
 /* 
@@ -235,11 +235,19 @@ int conditional(int x, int y, int z) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  int negate_y = ~y + 1;
-  int equal = !(x^y);//判断x与y是否相等
-  int sum = negate_y + x; //sum = x-y;
-  int big_than_0 = !(sum & 1<<31);
-  int ret =equal | (!big_than_0);
+  int is_equal = !(x^y);
+  int Tmin = 1<<31;
+  int x_sign = !(x & Tmin); //1正0负
+  int y_sign = !(y & Tmin);
+  int is_same_sign = !(y_sign ^ x_sign); //1 True, 0 Fasle
+  int x_let_y = is_equal | ((!x_sign) & y_sign);
+  /*condition 1: X and y are same sign.Using complement number.
+    condition 2: X and y are not same sign.Uisng sign number.
+   */
+  int not_mask = is_same_sign + (~0);
+  int x_minus_y = x + ((~y) + 1);
+  int x_minus_y_bt_0 = !(((~not_mask) & x_minus_y) & Tmin);
+  int ret = x_let_y | (!x_minus_y_bt_0) ;
   return ret;
 }
 //4
@@ -252,7 +260,13 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4 
  */
 int logicalNeg(int x) {
-  return 2;
+  int revert_x = ~x;
+  int not_negate = revert_x >> 31; //0代表是负数，1包含两种情况（整数或0）
+  /* x>0 */
+  int x_minus_1 = x + (~1) + 1; 
+  int x_bt_1= x_minus_1 >> 31;//为0时代表x>1，为1代表x<=1
+  int not_negateANDpositive = not_negate & ((x_bt_1) & (x^1));
+  return not_negateANDpositive;
 }
 /* howManyBits - return the minimum number of bits required to represent x in
  *             two's complement
@@ -267,6 +281,10 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
+  int bitsCounter = 0;
+  int p = x >> 31;
+  p = (x >> 30) ^ p;
+
   return 0;
 }
 //float
