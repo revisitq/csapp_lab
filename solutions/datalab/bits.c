@@ -280,13 +280,15 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
-  int mask = 1 | (1 << 8) | (1 << 16) | (1 << 24);
-  int part0, part1, part2, part3, not_zero_part0, not_zero_part1, not_zero_part2, not_zero_part3;
+  int tmp = 1 | (1 << 8);
+  int mask = tmp | (tmp << 16);
+  int part0, part1, part2, part3, not_zero_part1, not_zero_part2, not_zero_part3;
   int not_equal_part_32, not_equal_part_21, not_equal_part_10;  
   int bits_counter;
-  int not_zero;
+  int mask1,mask2,not_zero_mask;
+  int not_zero_last_part;
   int bit7 = (x >> 7) & mask;
-  int bit6 = (x >> 6) & mask;
+  int bit6 = (x >> 6) & mask; 
   int bit5 = (x >> 5) & mask;
   int bit4 = (x >> 4) & mask;
   int bit3 = (x >> 3) & mask;
@@ -303,56 +305,59 @@ int howManyBits(int x) {
   int not_euqal_21 = bit2 ^ bit1;
   int not_euqal_10 = bit1 ^ bit0;
   int not_equal_cross = cross_bit ^ bit0;
+  /*处理4个part*/
+  int bit_8_counter = mask + not_euqal_76;
 
   int not_equal = not_euqal_76 | not_euqal_65;
-  int bit_8_counter = not_euqal_76 + not_equal;
+  bit_8_counter = bit_8_counter + not_equal;
+
   not_equal = not_equal | not_euqal_54;
   bit_8_counter = bit_8_counter + not_equal;
+
   not_equal = not_equal | not_euqal_43;
   bit_8_counter = bit_8_counter + not_equal;
+
   not_equal = not_equal | not_euqal_32;
   bit_8_counter = bit_8_counter + not_equal;
+
   not_equal = not_equal | not_euqal_21;
   bit_8_counter = bit_8_counter + not_equal;
+
   not_equal = not_equal | not_euqal_10;
   bit_8_counter = bit_8_counter + not_equal;
-
-
-  part3 = bit_8_counter >> 24;
-  part2 = (bit_8_counter >> 16);
-  part1 = (bit_8_counter >> 8);
-  part0 = bit_8_counter;
-
+  /*逐步计算*/
   not_zero_part3 = (not_equal >> 24);
   not_zero_part2 = (not_equal >> 16);
   not_zero_part1 = (not_equal >> 8);
-  not_zero_part0 = not_equal;
-
-  part3 = part3 + not_zero_part3;
-  part2 = part2 + not_zero_part2;
-  part1 = part1 + not_zero_part1;
-  part0 = part0 + not_zero_part0;
-
-  not_zero_part3 = (~not_zero_part3) + 1;
-  not_zero_part2 = (~not_zero_part2) + 1;
-  not_zero_part1 = (~not_zero_part1) + 1;
-
   not_equal_part_32 = (not_equal_cross >> 24);
   not_equal_part_21 = (not_equal_cross >> 16);
   not_equal_part_10 = (not_equal_cross >> 8);
 
-  not_equal_part_32 = (~not_equal_part_32) + 1;
-  not_equal_part_21 = (~not_equal_part_21) + 1;
-  not_equal_part_10 = (~not_equal_part_10) + 1;
+  part3 = bit_8_counter >> 24;
+  part2 = bit_8_counter >> 16;
+  part1 = bit_8_counter >> 8;
+  part0 = bit_8_counter;
 
-  not_zero = not_zero_part3 | not_equal_part_32;
-  part2 = (not_zero & 0x08);
-  not_zero = not_zero_part2 | not_zero | not_equal_part_21;
-  part1 = (not_zero & 0x08);
-  not_zero = not_zero_part1 | not_zero | not_equal_part_10;
-  part0 = (not_zero & 0x08);
+  not_zero_mask = (~not_zero_part3) + 1;
+  part3 = (not_zero_mask & part3) | ((~not_zero_mask) & not_equal_part_32);
 
-  bits_counter = part3 + part2 + part1 + part0;
+  not_zero_last_part = not_zero_part3 | not_equal_part_32;
+  mask1 = ~not_zero_last_part + 1;
+  tmp = not_zero_part2 | not_equal_part_21;
+  mask2 = ~tmp + 1;
+  part2 = (mask1 & 8) | ((~mask1) & mask2 & part2);
+
+  not_zero_last_part = not_zero_last_part | tmp;
+  mask1 = ~not_zero_last_part + 1;
+  tmp = not_zero_part1 | not_equal_part_10;
+  mask2 = ~tmp + 1;
+  part1 = (mask1 & 8) | ((~mask1) & mask2 & part1);
+
+  not_zero_last_part = not_zero_last_part | tmp;
+  mask1 = (~not_zero_last_part) + 1;
+  part0 = (mask1 & 8) | ((~mask1) & part0);
+  /*求和*/
+  bits_counter = part3 + part2  + part1 + part0;
   return bits_counter & 0xFF;
 }
 //float
