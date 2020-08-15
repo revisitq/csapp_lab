@@ -32,8 +32,8 @@
 
 ### 0x05 isAsciiDigit
 - int isAsciiDigit(int x)
-- 判断x是否是ascii码0~9，即判断x是否在区间`[0x30,0x39]`之间，可用操作符`! ~ & ^ | + << >> `  
-  <font color=darkgrey size =2pp>采用循序渐进的办法，首先判断x是否在`[0x30,0x3F]`之间，接着判断x是否小于0x38，如果x大于0x38，判断x是否时0x39。综合来说，如果在`[0x30,0x3F]`之间成立的条件下，x小于0x38或者x等于0x38或0x39，那么x就在ascii码0~9之间，返回1。</font>
+- 判断x是否是ascii码0~9，即判断x是否在区间`[0x30,0x39]`之间，可用操作符`! ~ & ^ | + << >> `   
+  <font color=red size =2pp>采用循序渐进的办法，首先判断x是否在`[0x30,0x3F]`之间，接着判断x是否小于0x38，如果x大于0x38，判断x是否时0x39。综合来说，如果在`[0x30,0x3F]`之间成立的条件下，x小于0x38或者x等于0x38或0x39，那么x就在ascii码0~9之间，返回1。</font>
 
 ### 0x06 conditional
 - int conditional(int x, int y)
