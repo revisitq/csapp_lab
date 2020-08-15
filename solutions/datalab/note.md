@@ -4,5 +4,8 @@
 ## int部分实验
 <font color=skyblue size =2pp>实验对能使用的操作符和数据类型进行了限制，在int部分实验中使用的常数范围只能在`0x01~0xFF`，使用的数据类型只能是`int`，不能使用控制结构如`if, while, for，>, <`等</font>
 
-`0x00 bitXor`
+### 0x00 bitXor
+- int bitXor(int x, int y)
+- 使用`~`和`&`实现一个异或函数
+- 因为x与y的异或等价于 $\tilde{x}$
 
