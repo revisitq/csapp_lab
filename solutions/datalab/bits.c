@@ -329,6 +329,7 @@ int howManyBits(int x) {
   not_zero_part3 = (not_equal >> 24);
   not_zero_part2 = (not_equal >> 16);
   not_zero_part1 = (not_equal >> 8);
+  
   not_equal_part_32 = (not_equal_cross >> 24);
   not_equal_part_21 = (not_equal_cross >> 16);
   not_equal_part_10 = (not_equal_cross >> 8);
