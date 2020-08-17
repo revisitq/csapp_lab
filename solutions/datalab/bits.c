@@ -374,7 +374,32 @@ int howManyBits(int x) {
  *   Rating: 4
  */
 unsigned floatScale2(unsigned uf) {
-  return 2;
+  int nan_exp = 0x7F800000;
+  int exp = uf & 0x7F800000;
+  int frac = uf & 0x007FFFFF;
+  int frac_high = frac & 0x00400000;
+  int sign = uf & 0x80000000;
+  if(exp==nan_exp){
+  /*exp全为1，无穷大或nan*/
+      frac = frac;
+  }
+  else{
+  /*exp全为0或者是规格化数*/
+    if(!exp){
+    /*exp全为0*/
+      frac = frac << 1;
+      if(frac_high){
+        /*需要进位,进位成规格数*/
+        exp = 0x00800000;
+      }
+    }
+    else{
+    /*规格化数*/
+        exp = exp + 0x00800000;
+    }
+  }
+  
+  return sign | exp | frac;
 }
 /* 
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
@@ -389,7 +414,42 @@ unsigned floatScale2(unsigned uf) {
  *   Rating: 4
  */
 int floatFloat2Int(unsigned uf) {
-  return 2;
+  int nan_exp = 0x7F800000;
+  int exp = uf & 0x7F800000;
+  int frac = uf & 0x007FFFFF;
+  int sign = uf & 0x80000000;
+  int ret = 0;
+  if(exp==nan_exp){
+  /*exp全为1，无穷大或nan*/
+      ret = 0x80000000;
+  }
+  else{
+  /*exp全为0或者是规格化数*/
+    if(!exp){
+    /*exp全为0*/
+      ret = 0;
+    }
+    else{
+    /*规格化数*/
+      exp = (exp >> 23) - 127;//计算exp的值
+      if(exp < 0){
+        ret = 0;
+      }
+      else if(exp > 31){
+        ret = 0x80000000;
+      }
+      else{
+        if(exp <= 23){
+          frac = frac | 0x00800000;
+          ret = frac >> (23 -exp);
+        }
+      }
+    }
+}
+if(sign){
+  ret = (~ret) + 1;
+}
+return ret;
 }
 /* 
  * floatPower2 - Return bit-level equivalent of the expression 2.0^x
@@ -405,5 +465,18 @@ int floatFloat2Int(unsigned uf) {
  *   Rating: 4
  */
 unsigned floatPower2(int x) {
-    return 2;
+  int ret;
+  if(x==0) ret = 0x3f800000;
+  else if(x > 127) ret = 0x7F800000;
+  else if(x < -126) ret = 0;
+  else{
+    if(x > 0){
+      ret = ((0x7F + x) << 23);
+    }
+    else{
+      x = (~x) + 1;
+      ret = ((0x7F-x) << 23);
+    }
+  }
+  return ret;
 }
