@@ -970,7 +970,7 @@ Disassembly of section .text:
   401a40:	41 54                	push   %r12
   401a42:	55                   	push   %rbp
   401a43:	53                   	push   %rbx
-  401a44:	49 89 fc             	mov    %rdi,%r12
+  401a44:	49 89 fc             	mov    %rdi,%r12    # buf指针
   401a47:	c7 05 b3 36 20 00 00 	movl   $0x0,0x2036b3(%rip)        # 605104 <gets_cnt>
   401a4e:	00 00 00 
   401a51:	48 89 fb             	mov    %rdi,%rbx
